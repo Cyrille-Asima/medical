@@ -1,3 +1,4 @@
+*.psd filter=lfs diff=lfs merge=lfs -text
 *.pack filter=lfs diff=lfs merge=lfs -text
 * !text !filter !merge !diff
 frontend/node_modules/.cache/default-development/15.pack filter=lfs diff=lfs merge=lfs -text
