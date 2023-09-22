@@ -4,71 +4,52 @@ import { Form, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Message from "../../components/Message";
 import Loader from "../../components/Loader";
-import FormContainer from '../../components/FormContainer'
-import { useUpdateUserMutation, useGetUserDetailsQuery} from "../../slices/UsersApiSlice";
+import FormContainer from '../../components/FormContainer';
+import {useGetUserDetailsQuery, useUpdateUserMutation } from '../../slices/usersApiSlice'
 
 
 const   UserEditScreen = () => {
-    const { id: UserId } = useParams();
+    const { id: userId } = useParams();
+
     const [name, setName] = useState('');
-    const [price, setPrice] = useState(0);
-    const [image, setImage] = useState('');
-    const [brand, setBrand] = useState('');
-    const [category, setCategory] = useState('');
-    const [countInStock, setCountInStock] = useState(0);
-    const [description, setDescription] = useState('');
+    const [email, setEmail] = useState(0);
+    const [isAdmin, setIsAdmin] = useState(false);
 
-    const {data: product, isLoading, refetch, error} = useGetProductDetailsQuery(productId)
+    const {data: user, isLoading, refetch, error} = useGetUserDetailsQuery(userId)
 
-    const [updateProduct, { isLoading: loadingUpdate }] =useUpdateProductMutation()
+    const [updateUser, { isLoading: loadingUpdate }] =useUpdateUserMutation()
 
-    const [uploadProductImage, {isLoading: loadingUpload}] = useUploadProductImageMutation()
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (product) {
-            setName(product.name);
-            setPrice(product.price);
-            setImage(product.image);
-            setBrand(product.brand);
-            setCategory(product.category);
-            setCountInStock(product.countInStock);
-            setDescription(product.description);
+        if (user) {
+            setName(user.name);
+            setEmail(user.email);
+            setIsAdmin(user.isAdmin);
         }
-    }, [product])
+    }, [user])
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        const updatedProduct = {
-            productId,
-            name,
-            price,
-            image,
-            brand,
-            category,
-            countInStock,
-            description,
-        };
-
-        const result = await updateProduct(updatedProduct);
-        if (result.error) {
-            toast.error(result.error);
-        } else{
-            toast.success('Product updates')
+        try {
+            await updateUser({userId, name, email, isAdmin})
+            toast.success('User updated successfully')
             refetch()
-            navigate('/admin/productlist')
+            navigate('/admin/userlist')
+        } catch (err) {
+            toast.error(err?.data?.message || err.error)
         }
     }
 
 
 
     return (<>
-        <Link to='/admin/productlist' className="btn btn-light my-3">
+        <Link to='/admin/userlist' className="btn btn-light my-3">
             Go Back
         </Link>
         <FormContainer>
-            <h1>Edit Product</h1>
+            <h1>Edit User</h1>
             {loadingUpdate && <Loader/>}
 
             {isLoading ? <Loader/> : error ? <Message variant='danger'> {error}
@@ -84,72 +65,24 @@ const   UserEditScreen = () => {
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId="price" className="my-2">
-                        <Form.Label>Price</Form.Label>
+                    <Form.Group controlId="email" className="my-2">
+                        <Form.Label>Email</Form.Label>
                         <Form.Control
-                        type="number"
+                        type="email"
                         placeholder="Enter price"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}>
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}>
                         </Form.Control>
                     </Form.Group>
 
-                    <Form.Group controlId="image" className="my-2">
-                        <Form.Label> Image</Form.Label>
+                    <Form.Group controlId="isAdmin" className="my-2">
+                        <Form.Check
+                        type='checkbox'
+                        label='Is Admin'
+                        checked={isAdmin}
+                        onChange={(e)=> setIsAdmin(e.target.checked)}>
 
-                        <Form.Control 
-                        type="text" 
-                        placeholder="Enter image url"
-                        value={image}
-                        onChange={(e) => setImage}>
-                        </Form.Control>
-
-                        <Form.Control 
-                        type="file" 
-                        label='choose file' 
-                        onChange={uploadFileHandler}>
-                        </Form.Control>
-                        {loadingUpload && <Loader />}
-                    </Form.Group>
-
-                    <Form.Group controlId="Brand" className="my-2">
-                        <Form.Label>Brand</Form.Label>
-                        <Form.Control
-                        type="text"
-                        placeholder="Enter brand"
-                        value={brand}
-                        onChange={(e) => setBrand(e.target.value)}>
-                        </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group controlId="CountInStock" className="my-2">
-                        <Form.Label>Count In Stock</Form.Label>
-                        <Form.Control
-                        type="number"
-                        placeholder="Enter countInStock"
-                        value={countInStock}
-                        onChange={(e) => setCountInStock(e.target.value)}>
-                        </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group controlId="Category" className="my-2">
-                        <Form.Label>Category</Form.Label>
-                        <Form.Control
-                        type="text"
-                        placeholder="Enter category"
-                        value={category}
-                        onChange={(e) => setCategory(e.target.value)}>
-                        </Form.Control>
-                    </Form.Group>
-
-                    <Form.Group controlId="Description" className="my-2">
-                        <Form.Label>Description</Form.Label>
-                        <Form.Control
-                        type="text"
-                        placeholder="Enter description"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}>
-                        </Form.Control>
+                        </Form.Check>
                     </Form.Group>
 
                     <Button
