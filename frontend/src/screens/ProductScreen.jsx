@@ -22,15 +22,32 @@ const ProductScreen = () => {
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState('')
 
-    
+    const {data: product, isLoading, refetch, error} = useGetProductDetailsQuery(productId)
+    const [createReview, {isLoading: loadingProductReview}] = useCreateReviewMutation()
+    const {userInfo} = useSelector((state) => state.auth)
+
+
     const addToCartHandler = () => {
         dispatch(addToCart({ ...product, qty }));
         navigate('/cart');
         }
     
-    const {data: product, isLoading, refetch, error} = useGetProductDetailsQuery(productId)
-    const [createReview, {isLoading: loadingProductReview}] = useCreateReviewMutation()
-    const {userInfo} = useSelector((state) => state.auth)
+    const submitHandler = async  (e) => {
+        e.preventDefault()
+        try{
+            await createReview({
+                productId,
+                rating,
+                comment
+            }).unwrap();
+                refetch();
+                toast.success('Review Submitted');
+                setRating(0);
+                setComment('')
+        } catch (err) {
+            toast.error(err?.data?.message || err.error)
+        }
+    }
 
 
     return (
@@ -140,7 +157,7 @@ const ProductScreen = () => {
                                 <h2>Write a Customer Review</h2>
                                 {loadingProductReview && <Loader/>}
                                 {userInfo ? (
-                                    <Form>
+                                    <Form onSubmit={submitHandler}>
                                         <Form.Group controlId='rating' className='my-2'>
                                             <Form.Label>Rating</Form.Label>
                                             <Form.Control
