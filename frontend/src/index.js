@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import {HelmetProvider} from 'react-helmet-async'
 import{
   createBrowserRouter,
   createRoutesFromElements,
@@ -40,7 +41,9 @@ const router = createBrowserRouter (
   createRoutesFromElements(
     <Route path="/" element={<App/>}>
       <Route index={true} path="/" element={<HomeScreen/>}/>
+      <Route path="/search/:keyword" element={<HomeScreen/>}/>
       <Route path="/page/:pageNumber" element={<HomeScreen/>}/>
+      <Route path="/search/:keyword/page/:pageNumber" element={<HomeScreen/>}/>
       <Route path="/product/:id" element={<ProductScreen/>}/>
       <Route path="/cart" element={<CartScreen/>}/>
       <Route path='/login' element={<LoginScreen />} />
@@ -63,10 +66,6 @@ const router = createBrowserRouter (
         <Route path='/admin/user/:id/edit' element={<UserEditScreen />} />
 
       </Route>
-
-
-
-
     </Route>
   )
 )
@@ -74,11 +73,13 @@ const router = createBrowserRouter (
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
+    <HelmetProvider>
     <Provider store={store}>
       <PayPalScriptProvider deferLoading={true}>
         <RouterProvider router={router}/>
       </PayPalScriptProvider>
     </Provider>
+    </HelmetProvider>
   </React.StrictMode>
 );
 
