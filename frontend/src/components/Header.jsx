@@ -33,12 +33,12 @@ const Header = () => {
 
     return (
     <header>
-        <Navbar bg='dark' variant='dark' expand='lg' collapseOnSelect>
+        <Navbar bg='black' variant='dark' expand='lg' collapseOnSelect>
             <Container>
                 <LinkContainer to="/">
                     <Navbar.Brand>
-                        <img src={logo} alt="medical" />
-                        MedVice
+                        <img src={logo} alt="medical"  className='logo2'/>
+                        
                     </Navbar.Brand>
                 </LinkContainer>
                 <Navbar.Toggle aria-controls='basic-navbar-nav'/>
