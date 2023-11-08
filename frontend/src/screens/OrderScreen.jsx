@@ -70,11 +70,7 @@ const OrderScreen = () => {
     }
 
     
-    // async function onApproveTest() {
-    //     await payOrder({ orderId, details: { payer: {} } });
-    //     refetch();
-    //     toast.success('Order is paid');
-    // }
+
 
     function onError(err) {
         toast.error(err.message)
